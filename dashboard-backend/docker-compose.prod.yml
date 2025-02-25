@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  postgres-keycloak:
+    image: postgres:15
+    container_name: postgres-keycloak
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    volumes:
+      - postgres_keycloak_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - backend-network
+
+  postgres-app:
+    image: postgres:15
+    container_name: postgres-app
+    environment:
+      POSTGRES_DB: dashboard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${APP_DB_PASSWORD}
+    volumes:
+      - postgres_app_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - backend-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0
+    container_name: keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_HEALTH_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_PROXY: edge
+    command: start
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    restart: always
+    networks:
+      - backend-network
+    depends_on:
+      - postgres-keycloak
+
+  backend:
+    build: .
+    container_name: dashboard-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-app:5432/dashboard
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${APP_DB_PASSWORD}
+      KEYCLOAK_AUTH-SERVER-URL: http://keycloak:8080
+    restart: always
+    networks:
+      - backend-network
+    depends_on:
+      - postgres-app
+      - keycloak
+
+networks:
+  backend-network:
+    driver: bridge
+
+volumes:
+  postgres_keycloak_data:
+  postgres_app_data:
+  keycloak_data:
