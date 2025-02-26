@@ -104,15 +104,18 @@ services:
         value: 18
     runtime: docker
 
+# Configuração dos bancos de dados
 databases:
-  # Banco de dados PostgreSQL para a aplicação
+  # Banco de dados PostgreSQL para a aplicação Dashboard
   - name: dashboard-postgres
-    databaseName: dashboard
-    plan: free
     region: oregon
+    plan: free
+    databaseName: dashboard
+    user: postgres
 
   # Banco de dados PostgreSQL para o Keycloak
   - name: keycloak-postgres
-    databaseName: keycloak
-    plan: free
     region: oregon
+    plan: free
+    databaseName: keycloak
+    user: postgres
