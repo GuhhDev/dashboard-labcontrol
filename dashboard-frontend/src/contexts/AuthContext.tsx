@@ -21,7 +21,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async () => {
     try {
       await keycloak?.login({
-        redirectUri: window.location.origin
+        redirectUri: window.location.origin + window.location.pathname + window.location.search
       });
     } catch (error) {
       console.error('Login failed:', error);
@@ -30,8 +30,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
+    const returnUrl = sessionStorage.getItem('last_url') || '/login';
     keycloak?.logout({
-      redirectUri: window.location.origin + '/login'
+      redirectUri: window.location.origin + returnUrl
     });
   };
 

@@ -50,7 +50,7 @@ const Dashboard = () => {
   return (
     <Container>
       <Header>
-        <Title>Dashboard</Title>
+        <Title>Dashboard - Controle de Qualidade</Title>
       </Header>
 
       <CardsGrid>

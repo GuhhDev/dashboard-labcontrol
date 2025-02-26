@@ -67,6 +67,20 @@ class AmostraService {
     return response.data;
   }
 
+  async criarAmostra(amostra: Omit<Amostra, 'id' | 'ensaios'>): Promise<Amostra> {
+    const response = await api.post('/amostras', amostra);
+    return response.data;
+  }
+
+  async atualizarAmostra(id: number, amostra: Omit<Amostra, 'id' | 'ensaios'>): Promise<Amostra> {
+    const response = await api.put(`/amostras/${id}`, amostra);
+    return response.data;
+  }
+
+  async deletarAmostra(id: number): Promise<void> {
+    await api.delete(`/amostras/${id}`);
+  }
+
   async getEnsaiosPorStatus(): Promise<{ status: string; quantidade: number }[]> {
     const response = await api.get('/amostras/ensaios/status');
     return response.data;

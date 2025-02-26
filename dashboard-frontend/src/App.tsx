@@ -7,9 +7,13 @@ import { GlobalStyles } from './styles/GlobalStyles';
 import keycloak from './config/keycloak';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import UrlHistoryTracker from './components/UrlHistoryTracker';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
+import AmostrasPage from './pages/Amostras';
+import RelatoriosPage from './pages/Relatorios';
+import Cadastros from './pages/Cadastros';
 
 const theme = {
   colors: {
@@ -23,7 +27,7 @@ const theme = {
 };
 
 function App() {
-  const [isReady, setIsReady] = React.useState(false);
+  const [, setIsReady] = React.useState(false);
 
   const handleKeycloakEvent = (event: AuthClientEvent, error?: KeycloakError) => {
     if (error) {
@@ -41,9 +45,10 @@ function App() {
       authClient={keycloak}
       initOptions={{
         onLoad: 'login-required',
-        redirectUri: 'http://localhost:5173',
+        redirectUri: window.location.origin + window.location.pathname,
         silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
-        pkceMethod: 'S256'
+        pkceMethod: 'S256',
+        checkLoginIframe: false
       }}
       onEvent={handleKeycloakEvent}
       LoadingComponent={<div>Carregando autenticação...</div>}
@@ -52,6 +57,7 @@ function App() {
         <GlobalStyles />
         <AuthProvider>
           <Router>
+            <UrlHistoryTracker />
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route
@@ -60,7 +66,9 @@ function App() {
                   <PrivateRoute>
                     <>
                       <Sidebar />
-                      <Dashboard />
+                      <main>
+                        <Dashboard />
+                      </main>
                     </>
                   </PrivateRoute>
                 }
@@ -71,7 +79,9 @@ function App() {
                   <PrivateRoute>
                     <>
                       <Sidebar />
-                      <div>Amostras</div>
+                      <main>
+                        <AmostrasPage />
+                      </main>
                     </>
                   </PrivateRoute>
                 }
@@ -82,7 +92,22 @@ function App() {
                   <PrivateRoute>
                     <>
                       <Sidebar />
-                      <div>Relatórios</div>
+                      <main>
+                        <RelatoriosPage />
+                      </main>
+                    </>
+                  </PrivateRoute>
+                }
+              />
+               <Route
+                path="/cadastros"
+                element={
+                  <PrivateRoute>
+                    <>
+                      <Sidebar />
+                      <main>
+                        <Cadastros />
+                      </main>
                     </>
                   </PrivateRoute>
                 }
@@ -93,7 +118,9 @@ function App() {
                   <PrivateRoute>
                     <>
                       <Sidebar />
-                      <div>Configurações</div>
+                      <main>
+                        <div>Configurações</div>
+                      </main>
                     </>
                   </PrivateRoute>
                 }

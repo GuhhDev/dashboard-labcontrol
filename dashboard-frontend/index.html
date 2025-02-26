@@ -4,7 +4,23 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>LabControl - Controle de Qualidade</title>
+    <!-- Adicionando uma base href para melhorar o comportamento das rotas -->
+    <base href="/" />
+    <!-- Script para restaurar a última URL ao atualizar a página -->
+    <script>
+      (function() {
+        // Verifica se existe uma última URL armazenada
+        var lastUrl = sessionStorage.getItem('last_url');
+        var currentPath = window.location.pathname;
+        
+        // Se o usuário estiver na raiz, mas houver uma última URL salva (que não seja /login)
+        if (currentPath === '/' && lastUrl && lastUrl !== '/login' && lastUrl !== '/') {
+          console.log('Redirecionando para última URL:', lastUrl);
+          history.replaceState(null, document.title, lastUrl);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
