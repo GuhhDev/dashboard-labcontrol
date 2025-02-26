@@ -1,0 +1,87 @@
+services:
+  # Serviço da aplicação backend
+  - type: web
+    name: dashboard-backend
+    env: docker
+    rootDir: dashboard-backend
+    region: oregon
+    plan: free
+    branch: main
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 8080
+      - key: JDBC_DATABASE_URL
+        fromDatabase:
+          name: dashboard-postgres
+          property: connectionString
+      - key: JDBC_DATABASE_USERNAME
+        fromDatabase:
+          name: dashboard-postgres
+          property: user
+      - key: JDBC_DATABASE_PASSWORD
+        fromDatabase:
+          name: dashboard-postgres
+          property: password
+      - key: KEYCLOAK_URL
+        fromService:
+          type: web
+          name: dashboard-keycloak
+          envVarKey: KEYCLOAK_URL
+      - key: KEYCLOAK_REALM
+        value: dashboard-concreto
+      - key: AWS_REGION
+        value: sa-east-1
+      - key: AWS_S3_BUCKET_NAME
+        value: dashboard-labcontrol-bucket
+      - key: FRONTEND_URL
+        value: https://dashboard-labcontrol-frontend.onrender.com
+
+  # Serviço Keycloak para autenticação
+  - type: web
+    name: dashboard-keycloak
+    env: docker
+    dockerfilePath: ./keycloak/Dockerfile
+    dockerContext: ./keycloak
+    region: oregon
+    plan: free
+    branch: main
+    healthCheckPath: /auth/health/ready
+    envVars:
+      - key: KEYCLOAK_ADMIN
+        value: admin
+      - key: KEYCLOAK_ADMIN_PASSWORD
+        generateValue: true
+      - key: KC_DB
+        value: postgres
+      - key: KC_DB_URL
+        fromDatabase:
+          name: keycloak-postgres
+          property: connectionString
+      - key: KC_DB_USERNAME
+        fromDatabase:
+          name: keycloak-postgres
+          property: user
+      - key: KC_DB_PASSWORD
+        fromDatabase:
+          name: keycloak-postgres
+          property: password
+      - key: KC_HOSTNAME
+        sync: false
+      - key: KEYCLOAK_URL
+        value: https://dashboard-keycloak.onrender.com
+
+databases:
+  # Banco de dados PostgreSQL para a aplicação
+  - name: dashboard-postgres
+    databaseName: dashboard
+    plan: free
+    region: oregon
+
+  # Banco de dados PostgreSQL para o Keycloak
+  - name: keycloak-postgres
+    databaseName: keycloak
+    plan: free
+    region: oregon
