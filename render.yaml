@@ -72,7 +72,7 @@ services:
       - key: KC_HOSTNAME
         sync: false
       - key: KEYCLOAK_URL
-        value: https://dashboard-keycloak.onrender.com
+        value: https://dashboard-keycloak.onrender.com/auth
     runtime: docker
 
   # Serviço da aplicação frontend
