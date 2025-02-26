@@ -91,11 +91,7 @@ public class OrcamentoRealizadoService {
 
                 @Override
                 public long getSize() {
-                    try {
-                        return excelStream.available();
-                    } catch (IOException e) {
-                        return 0;
-                    }
+                    return excelStream.available();
                 }
 
                 @Override
